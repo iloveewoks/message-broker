@@ -1,20 +1,20 @@
 package org.example.messages;
 
-public class Message<ID, T> {
+public class Message {
 
-    private final ID id;
-    private final T content;
+    private final Long id;
+    private final String content;
 
-    public Message(ID id, T content) {
+    public Message(Long id, String content) {
         this.id = id;
         this.content = content;
     }
 
-    public ID getId() {
+    public Long getId() {
         return id;
     }
 
-    public T getContent() {
+    public String getContent() {
         return content;
     }
 

@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Producer extends ShutdownableThread {
-    private final KafkaProducer<Long, Message<Long, String>> producer;
+    private final KafkaProducer<Long, Message> producer;
     private final String TOPIC;
     private final Long MESSAGE_ID;
 
@@ -35,7 +35,7 @@ public class Producer extends ShutdownableThread {
 
     @Override
     public void doWork() {
-        Message<Long, String> message = new Message<>(MESSAGE_ID, "Message_" + messageNo.incrementAndGet());
+        Message message = new Message(MESSAGE_ID, "Message_" + messageNo.incrementAndGet());
 
         long startTime = System.currentTimeMillis();
         asyncSend(message, startTime);
@@ -48,7 +48,7 @@ public class Producer extends ShutdownableThread {
 
     }
 
-    private void asyncSend(Message<Long, String> message, long startTime) {
+    private void asyncSend(Message message, long startTime) {
         producer.send(new ProducerRecord<>(TOPIC, messageNo.get(), message),
                 (metadata, exception) -> {
                     long elapsedTime = System.currentTimeMillis() - startTime;

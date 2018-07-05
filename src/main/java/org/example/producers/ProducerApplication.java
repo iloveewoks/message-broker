@@ -1,18 +1,12 @@
 package org.example.producers;
 
 import kafka.utils.ShutdownableThread;
-import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.Serializer;
 import org.example.messages.Message;
-import org.example.serds.JsonPOJODeserializer;
-import org.example.serds.JsonPOJOSerializer;
+import org.example.serds.MessageSerd;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,17 +14,7 @@ public class ProducerApplication {
 
     public static void main(String[] args) {
 
-        Map<String, Object> serdeProps = new HashMap<>();
-
-        final Serializer<Message<Long, String>> MessageSerializer = new JsonPOJOSerializer<>();
-        serdeProps.put("JsonPOJOClass", Message.class);
-        MessageSerializer.configure(serdeProps, false);
-
-        final Deserializer<Message<Long, String>> MessageDeserializer = new JsonPOJODeserializer<>();
-        serdeProps.put("JsonPOJOClass", Message.class);
-        MessageDeserializer.configure(serdeProps, false);
-
-        Serde<Message<Long, String>> messageSerde = Serdes.serdeFrom(MessageSerializer, MessageDeserializer);
+        Serde<Message> messageSerde = new MessageSerd();
         Serde keySerde = Serdes.Long();
 
         String topic = "test-topic";
