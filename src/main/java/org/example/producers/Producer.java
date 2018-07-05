@@ -3,46 +3,42 @@ package org.example.producers;
 import kafka.utils.ShutdownableThread;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.Serde;
+import org.example.messages.Message;
 
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Producer extends ShutdownableThread {
-    private final KafkaProducer<Integer, String> producer;
-    private final String topic;
-    private final Boolean isAsync;
+    private final KafkaProducer<Long, Message<Long, String>> producer;
+    private final String TOPIC;
+    private final Long MESSAGE_ID;
 
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
     public static final String CLIENT_ID = "SampleProducer";
 
-    private static final AtomicInteger messageNo = new AtomicInteger(0);
+    private final AtomicLong messageNo = new AtomicLong(0);
 
-    public Producer(String topic, Boolean isAsync) {
+    public Producer(String topic, Long messageId, Serde keySerde, Serde valueSerde) {
         super("KafkaProducerExample", false);
         Properties properties = new Properties();
         properties.put("bootstrap.servers", KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
         properties.put("client.id", CLIENT_ID);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("key.serializer", keySerde.serializer().getClass().getName());
+        properties.put("value.serializer", valueSerde.serializer().getClass().getName());
 
         producer = new KafkaProducer<>(properties);
-        this.topic = topic;
-        this.isAsync = isAsync;
+        this.TOPIC = topic + "-" + messageId;
+        this.MESSAGE_ID = messageId;
     }
 
     @Override
     public void doWork() {
-        String message = "Message_" + messageNo.incrementAndGet();
+        Message<Long, String> message = new Message<>(MESSAGE_ID, "Message_" + messageNo.incrementAndGet());
 
-        if (isAsync) {
-            long startTime = System.currentTimeMillis();
-
-            asyncSend(message, startTime);
-        } else {
-            syncSend(message);
-        }
+        long startTime = System.currentTimeMillis();
+        asyncSend(message, startTime);
 
         try {
             Thread.sleep(100);
@@ -52,31 +48,19 @@ public class Producer extends ShutdownableThread {
 
     }
 
-    private void asyncSend(String message, long startTime) {
-        producer.send(new ProducerRecord<>(topic, messageNo.get(), message),
+    private void asyncSend(Message<Long, String> message, long startTime) {
+        producer.send(new ProducerRecord<>(TOPIC, messageNo.get(), message),
                 (metadata, exception) -> {
                     long elapsedTime = System.currentTimeMillis() - startTime;
 
                     if (metadata != null) {
-                        System.out.println("message(" + messageNo.get() + ", " + message + ") " +
-                                "sent to partition(" + metadata.partition() + "), " +
+                        System.out.println(message + " sent to partition(" + metadata.partition() + "), " +
                                 "offset(" + metadata.offset() + ") " +
                                 "in " + elapsedTime + " ms");
                     } else {
                         exception.printStackTrace();
                     }
                 });
-    }
-
-    private void syncSend(String message) {
-        try {
-            producer.send(new ProducerRecord<>(topic, messageNo.get(), message)).get();
-
-            System.out.println("Sent message: (" + messageNo.get() + ", " + message + ")");
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
     }
 
 }
