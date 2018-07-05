@@ -2,19 +2,21 @@ package org.example.consumers;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.Serde;
 
 import java.util.Collections;
 import java.util.Properties;
 
 public class VanilaConsumer extends Consumer {
     private final KafkaConsumer<Integer, String> consumer;
-    private final String topic;
+    private final String TOPIC;
+    private final Long MESSAGE_ID;
 
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
     public static final String CLIENT_ID = "VanilaConsumer";
 
-    public VanilaConsumer(String topic) {
+    public VanilaConsumer(String topic, Long messageId, Serde keySerde, Serde valueSerde) {
         super("KafkaConsumerExample", false);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
@@ -22,19 +24,20 @@ public class VanilaConsumer extends Consumer {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keySerde.deserializer().getClass().getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueSerde.deserializer().getClass().getName());
 
         consumer = new KafkaConsumer<>(props);
-        this.topic = topic;
+        this.TOPIC = topic + "-" + messageId;
+        this.MESSAGE_ID = messageId;
     }
 
     @Override
     public void doWork() {
-        consumer.subscribe(Collections.singletonList(this.topic));
+        consumer.subscribe(Collections.singletonList(this.TOPIC));
 
         consumer.poll(1000)
-                .forEach(record -> System.out.println("[" + topic + "] Received message: (" + record.key() + ", " +
+                .forEach(record -> System.out.println("[" + TOPIC + "][vanila] Received message: (" + record.key() + ", " +
                                                     record.value() + ") at offset " + record.offset()));
     }
 }

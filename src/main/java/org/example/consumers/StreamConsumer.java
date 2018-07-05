@@ -1,6 +1,6 @@
 package org.example.consumers;
 
-import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -12,24 +12,28 @@ import java.util.concurrent.CountDownLatch;
 public class StreamConsumer extends Consumer {
     private final KafkaStreams streams;
     private final CountDownLatch latch;
+    private final String TOPIC;
+    private final Long MESSAGE_ID;
 
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
-    public static final String CLIENT_ID = "StreamConsumer";
 
-    public StreamConsumer(String topic) {
+    public StreamConsumer(String topic, Long messageId, Serde keySerde, Serde valueSerde) {
         super("KafkaStreamConsumerExample", false);
         Properties props = new Properties();
 
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-consumer");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Integer().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getClass());
+
+        this.TOPIC = topic + "-" + messageId;
+        this.MESSAGE_ID = messageId;
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        builder.stream(topic)
-                .foreach((key, value) -> System.out.println("[" + topic + "] " +
+        builder.stream(TOPIC)
+                .foreach((key, value) -> System.out.println("[" + TOPIC + "][stream] " +
                                             "Received message: " + key + " - " + value));
 
         Topology topology = builder.build();
@@ -38,7 +42,7 @@ public class StreamConsumer extends Consumer {
         // attach shutdown handler to catch control-c
         latch = new CountDownLatch(1);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(topic + "-streams-shutdown-hook") {
+        Runtime.getRuntime().addShutdownHook(new Thread(TOPIC + "-streams-shutdown-hook") {
             @Override
             public void run() {
                 streams.close();
