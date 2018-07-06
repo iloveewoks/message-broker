@@ -10,7 +10,7 @@ import org.apache.kafka.streams.Topology;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-public class StreamConsumer extends Consumer {
+public class StreamConsumer<K, V> extends Consumer {
     private final KafkaStreams streams;
     private final CountDownLatch latch;
     private final String TOPIC;
@@ -19,7 +19,7 @@ public class StreamConsumer extends Consumer {
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
 
-    public StreamConsumer(String topic, Long messageId, Serde keySerde, Serde valueSerde) {
+    public StreamConsumer(String topic, Long messageId, Serde<K> keySerde, Serde<V> valueSerde) {
         super("KafkaStreamConsumerExample", false);
         Properties props = new Properties();
 

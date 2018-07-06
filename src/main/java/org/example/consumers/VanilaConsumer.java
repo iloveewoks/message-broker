@@ -3,13 +3,12 @@ package org.example.consumers;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Serde;
-import org.example.messages.Message;
 
 import java.util.Collections;
 import java.util.Properties;
 
-public class VanilaConsumer extends Consumer {
-    private final KafkaConsumer<Integer, Message> consumer;
+public class VanilaConsumer<K, V> extends Consumer {
+    private final KafkaConsumer<K, V> consumer;
     private final String TOPIC;
     private final Long MESSAGE_ID;
 
@@ -17,7 +16,7 @@ public class VanilaConsumer extends Consumer {
     public static final int KAFKA_SERVER_PORT = 9092;
     public static final String CLIENT_ID = "VanilaConsumer";
 
-    public VanilaConsumer(String topic, Long messageId, Serde keySerde, Serde valueSerde) {
+    public VanilaConsumer(String topic, Long messageId, Serde<K> keySerde, Serde<V> valueSerde) {
         super("KafkaConsumerExample", false);
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
