@@ -13,10 +13,10 @@ public class ConsumerApplication {
 
         String topic = "test-topic";
 
-//        Consumer vanilaConsumer = new VanilaConsumer(topic, 2L, keySerde, messageSerde);
+        Consumer vanilaConsumer = new VanilaConsumer(topic, 2L, keySerde, messageSerde);
         Consumer streamConsumer = new StreamConsumer(topic, 1L, keySerde, messageSerde);
 
-//        vanilaConsumer.start();
+        vanilaConsumer.start();
         streamConsumer.start();
 
         try {

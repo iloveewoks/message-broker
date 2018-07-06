@@ -3,12 +3,13 @@ package org.example.consumers;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.Serde;
+import org.example.messages.Message;
 
 import java.util.Collections;
 import java.util.Properties;
 
 public class VanilaConsumer extends Consumer {
-    private final KafkaConsumer<Integer, String> consumer;
+    private final KafkaConsumer<Integer, Message> consumer;
     private final String TOPIC;
     private final Long MESSAGE_ID;
 
@@ -24,10 +25,8 @@ public class VanilaConsumer extends Consumer {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keySerde.deserializer().getClass().getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueSerde.deserializer().getClass().getName());
 
-        consumer = new KafkaConsumer<>(props);
+        consumer = new KafkaConsumer<>(props, keySerde.deserializer(), valueSerde.deserializer());
         this.TOPIC = topic + "-" + messageId;
         this.MESSAGE_ID = messageId;
     }
