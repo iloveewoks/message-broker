@@ -1,9 +1,14 @@
 package org.example.messages;
 
-public class Message {
+import java.io.Serializable;
 
-    private final Long id;
-    private final String content;
+public class Message implements Serializable {
+
+    private Long id;
+    private String content;
+
+    public Message() {
+    }
 
     public Message(Long id, String content) {
         this.id = id;
@@ -14,8 +19,16 @@ public class Message {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override

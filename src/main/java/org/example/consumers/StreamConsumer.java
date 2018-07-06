@@ -1,6 +1,7 @@
 package org.example.consumers;
 
 import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.streams.Consumed;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
@@ -24,15 +25,13 @@ public class StreamConsumer extends Consumer {
 
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stream-consumer");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, keySerde.getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, valueSerde.getClass());
 
         this.TOPIC = topic + "-" + messageId;
         this.MESSAGE_ID = messageId;
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        builder.stream(TOPIC)
+        builder.stream(TOPIC, Consumed.with(keySerde, valueSerde))
                 .foreach((key, value) -> System.out.println("[" + TOPIC + "][stream] " +
                                             "Received message: " + key + " - " + value));
 
