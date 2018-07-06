@@ -40,9 +40,9 @@ However, since different `id`'s assume different processing behaviour, which mea
    ```
    </details>
 
-2. Produce some messages using `ProducerApplication` which can be found in `org.example.producers` package.
+2. Produce some messages using `ProducerApplication` which could be found in `org.example.producers` package.
 
-3. Consume these messages using `ConsumerApplication` which can be found in `org.example.consumers`.
+3. Consume these messages using `ConsumerApplication` which could be found in `org.example.consumers`.
 
 4. There are two Consumer implementations - Streams based and vanilla `KafkaConsumer` based.
 
