@@ -6,11 +6,11 @@ There is a `Message` class where different `id`'s for messages could be specifie
 
 ## Solution
 
-Turn message `id`'s into the Kafka topics.
+1. Turn message `id`'s into the Kafka topics.
 
-Route messages to specific topic based on it's `id`.
+2. Route messages to specific topic based on it's `id`.
 
-Subscribe consumer to desirable `id`-topic and use it to process messages accordingly.
+3. Subscribe consumer to desirable `id`-topic and use it to process messages accordingly.
 
 
 ## Possible Downsides
@@ -22,7 +22,7 @@ However, since different `id`'s assume different processing behaviour, which mea
 
 ##Further Upgrades
 
-+ The main one (as I see now) is generalising `Message` class. Which can be done using Kafka Avro Serdes.
++ The main one (as I see now) is generalising `Message` class. Which I believe can be done using Kafka Avro Serdes.
 
 + Another one is to use Stream based Producer which would provide further convenience in terms of piping and processing of different messaging streams.
 
