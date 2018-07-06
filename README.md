@@ -20,14 +20,14 @@ There is a `Message` class where different `id`'s for messages could be specifie
 However, since different `id`'s assume different processing behaviour, which means such behaviour should be specified ahead. So the person implementing this behaviour would know about available `id`'s and would have no problem implementing suitable consumer.
 
 
-##Further Upgrades
+## Further Upgrades
 
 + The main one (as I see now) is generalising `Message` class. Which I believe can be done using Kafka Avro Serdes.
 
 + Another one is to use Stream based Producer which would provide further convenience in terms of piping and processing of different messaging streams.
 
 
-##How to Run
+## How to Run
 
 1. <details>
     <summary>Launch Kafka</summary>
