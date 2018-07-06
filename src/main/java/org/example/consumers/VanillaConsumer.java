@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-public class VanilaConsumer<K, V> extends org.example.consumers.Consumer {
+public class VanillaConsumer<K, V> extends org.example.consumers.Consumer {
     private final KafkaConsumer<K, V> consumer;
     private final String TOPIC;
     private final Long MESSAGE_ID;
@@ -17,10 +17,10 @@ public class VanilaConsumer<K, V> extends org.example.consumers.Consumer {
 
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
-    public static final String CLIENT_ID = "VanilaConsumer";
+    public static final String CLIENT_ID = "VanillaConsumer";
 
-    public VanilaConsumer(String topic, Long messageId, Serde<K> keySerde, Serde<V> valueSerde,
-                          Consumer<? super ConsumerRecord<K, V>> callback) {
+    public VanillaConsumer(String topic, Long messageId, Serde<K> keySerde, Serde<V> valueSerde,
+                           Consumer<? super ConsumerRecord<K, V>> callback) {
 
         super("KafkaConsumerExample", false);
         Properties props = new Properties();

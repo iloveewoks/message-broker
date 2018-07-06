@@ -8,7 +8,7 @@ import org.example.messages.Message;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageSerd implements Serde<Message> {
+public class MessageSerde implements Serde<Message> {
 
     final private JsonPOJOSerializer<Message> serializer;
     final private JsonPOJODeserializer<Message> deserializer;
