@@ -32,7 +32,7 @@ However, since different `id`'s assume different processing behaviour, which mea
 1. <details>
     <summary>Launch Kafka</summary>
         
-        Inside the Kafka folder execute following:
+        Inside the Kafka folder execute the following commands:
         
    ```bash
         bin/zookeeper-server-start.sh confizookeeper.properties
