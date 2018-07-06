@@ -6,6 +6,7 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.kstream.ForeachAction;
 
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -19,7 +20,8 @@ public class StreamConsumer<K, V> extends Consumer {
     public static final String KAFKA_SERVER_URL = "localhost";
     public static final int KAFKA_SERVER_PORT = 9092;
 
-    public StreamConsumer(String topic, Long messageId, Serde<K> keySerde, Serde<V> valueSerde) {
+    public StreamConsumer(String topic, Long messageId, Serde<K> keySerde,
+                          Serde<V> valueSerde, ForeachAction<K, V> callback) {
         super("KafkaStreamConsumerExample", false);
         Properties props = new Properties();
 
@@ -32,8 +34,7 @@ public class StreamConsumer<K, V> extends Consumer {
         StreamsBuilder builder = new StreamsBuilder();
 
         builder.stream(TOPIC, Consumed.with(keySerde, valueSerde))
-                .foreach((key, value) -> System.out.println("[" + TOPIC + "][stream] " +
-                                            "Received message: " + key + " - " + value));
+                .foreach(callback);
 
         Topology topology = builder.build();
         streams = new KafkaStreams(topology, props);

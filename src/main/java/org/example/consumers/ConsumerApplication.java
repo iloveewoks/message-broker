@@ -14,17 +14,16 @@ public class ConsumerApplication {
 
         String topic = "test-topic";
 
-        Consumer vanilaConsumer = new VanilaConsumer<>(topic, 2L, keySerde, messageSerde);
-        Consumer streamConsumer = new StreamConsumer<>(topic, 1L, keySerde, messageSerde);
+        Consumer vanilaConsumer = new VanilaConsumer<>(topic, 2L, keySerde, messageSerde,
+                record -> System.out.println("[" + topic + "-" + 2L + "][vanila] Received message: (" +
+                        record.key() + ", " + record.value() + ") at offset " + record.offset()));
+
+        Consumer streamConsumer = new StreamConsumer<>(topic, 1L, keySerde, messageSerde,
+                (key, value) -> System.out.println("[" + topic + "-" + 1L + "][stream] " +
+                "Received message: " + key + " - " + value));
 
         vanilaConsumer.start();
         streamConsumer.start();
-
-        try {
-            Thread.sleep(10_000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
     
 }
